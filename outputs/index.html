@@ -1,0 +1,100 @@
+<html>
+    <head>
+        <!-- deck.gl standalone bundle -->
+        <script src="https://unpkg.com/deck.gl@^8.8.0/dist.min.js"></script>
+        <script src="https://unpkg.com/@deck.gl/carto@^8.8.0/dist.min.js"></script>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js'></script>
+        
+        <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
+
+        <title>CARTO deck.gl example</title>
+        <style type="text/css">
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: UberMove, Helvetica, Arial, sans-serif;
+            }
+            #container {
+                width: 100vw;
+                height: 100vh;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="container"></div>
+    </body>
+
+    <script type="text/javascript">
+        const COLOR_SCALE = d3.scaleThreshold().domain([0, 0.05, 0.10,0.15,0.2,0.3, 0.45, 0.6, 0.75,1.0]).range([
+            [65, 182, 196],
+            [127, 205, 187],
+            [199, 233, 180],
+            [237, 248, 177],
+            [255, 255, 204],
+            [255, 237, 160],
+            [254, 217, 118],
+            [254, 178, 76],
+            [253, 141, 60],
+            [252, 78, 42],
+            [227, 26, 28],
+            [189, 0, 38],
+            [128, 0, 38]
+        ]);
+        
+        function tooltip({object}) {
+            return (
+                object && {
+                html: `\
+            <div><b>Average Property Value</b></div>
+            <div>County: ${object.properties.geo_name}</div>
+            <div>with id: ${object.properties.geo_id}</div>
+            <div>Households with Kids ${object.properties.pct_households_with_kids}%</div>
+            `
+                }
+            );
+        }
+
+        const INITIAL_VIEW_STATE = {
+
+        };
+
+        const deckgl = new deck.DeckGL({
+        
+        mapStyle: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+        getTooltip: tooltip,
+        initialViewState: {
+            latitude: 40.254,
+            longitude: -100.13,
+            maxZoom: 10,
+            zoom: 4,
+            bearing: 0,
+            pitch: 30
+        },
+        controller: true,
+        layers: [
+        new deck.GeoJsonLayer({
+            id: 'geojson',
+            data: './plot-vars-geojson.json',
+            opacity: 0.8,
+            stroked: false,
+            filled: true,
+            extruded: true,
+            wireframe: true,
+            getElevation: f => f.properties.pct_households_with_kids*5000,
+            getFillColor: f => {
+                const color = COLOR_SCALE(f.properties.pct_households_with_kids/50);
+                console.log(f.properties.pct_households_with_kids)
+                console.log('Color:', color);
+                return color;
+            },
+            // getFillColor: f => COLOR_SCALE(f.properties.pct_households_with_kids),
+            getLineColor: [255, 255, 255],
+            pickable: true
+        })
+        ]
+    });
+    </script>
+</html>
+
