@@ -5,7 +5,7 @@
         <script src="https://unpkg.com/@deck.gl/carto@^8.8.0/dist.min.js"></script>
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <script src='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js'></script>
-        
+
         <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
 
         <title>CARTO deck.gl example</title>
@@ -15,17 +15,58 @@
                 padding: 0;
                 font-family: UberMove, Helvetica, Arial, sans-serif;
             }
+            
             #container {
                 width: 100vw;
                 height: 100vh;
             }
+            #legend-container {
+                position: absolute;
+                top: 10px; /* Adjust the top value to control the vertical position */
+                right: 10px; /* Adjust the right value to control the horizontal position */
+                background-color: white;
+                border: 1px solid #ccc;
+                line-height: 110%;
+                /* text-wrap: balance; */
+                padding: 15px;
+                z-index: 1; /* Ensure the legend appears on top of the map */
+            }
         </style>
     </head>
-
     <body>
+        <div id="legend-container">
+            <p>
+              <h1>Reachwell Data Mapping</h1>
+              Education, Poverty, and Language Indicators <br> by County in the United States <br>
+              <br>
+              Height of polygons               
+                <select id="contour-type">
+                    <option value="Isoband">Households</option>
+                    <option value="Isoline">Median Income</option>
+                </select>
+              <br>
+
+              Color 
+                <select id="contour-type">
+                    <option value="Isoband">Households</option>
+                    <option value="Isoline">Median Income</option>
+                </select>
+              <br>  
+              Show Competitors <input type="checkbox" id="competitors">
+
+
+
+    
+
+            </p>
+            <p>
+              Data source: <a href="https://data.census.gov/">US Census Bureau </a>
+            </p>
+          </div>
+
         <div id="container"></div>
     </body>
-
+    </html>
     <script type="text/javascript">
         const COLOR_SCALE = d3.scaleThreshold().domain([0, 0.05, 0.10,0.15,0.2,0.3, 0.45, 0.6, 0.75,1.0]).range([
             [65, 182, 196],
@@ -55,10 +96,10 @@
                 }
             );
         }
+        
 
-        const INITIAL_VIEW_STATE = {
+       
 
-        };
 
         const deckgl = new deck.DeckGL({
         
@@ -68,6 +109,7 @@
             latitude: 40.254,
             longitude: -100.13,
             maxZoom: 10,
+            minZoom: 3,
             zoom: 4,
             bearing: 0,
             pitch: 30
@@ -76,15 +118,15 @@
         layers: [
         new deck.GeoJsonLayer({
             id: 'geojson',
-            data: './plot-vars-geojson.json',
+            data: './county-plots.json',
             opacity: 0.8,
             stroked: false,
             filled: true,
             extruded: true,
             wireframe: true,
-            getElevation: f => f.properties.pct_households_with_kids*5000,
+            getElevation: f => Math.sqrt( f.properties.total_households ) * 500,
             getFillColor: f => {
-                const color = COLOR_SCALE(f.properties.pct_households_with_kids/50);
+                const color = COLOR_SCALE(f.properties.pct_speaks_other_than_english/100);
                 console.log(f.properties.pct_households_with_kids)
                 console.log('Color:', color);
                 return color;
@@ -96,5 +138,6 @@
         ]
     });
     </script>
+
 </html>
 
