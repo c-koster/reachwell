@@ -40,24 +40,24 @@
               Education, Poverty, and Language Indicators <br> by County in the United States <br>
               <br>
               Height of polygons               
-                <select id="contour-type">
-                    <option value="Isoband">Households</option>
-                    <option value="Isoline">Median Income</option>
+
+                <select id="height-selector">
+                    <option value="total_households">Total Households</option>
+                    <option value="median_income_households_with_children">Median Income</option>
                 </select>
               <br>
-
               Color 
-                <select id="contour-type">
-                    <option value="Isoband">Households</option>
-                    <option value="Isoline">Median Income</option>
+                <select id="color-selector">
+                    <option value="pct_households_with_chilren">Households with Kids</option>
+                    <option value="pct_households_with_children_married_family">Married Family Households</option>
+                    <option value="pct_households_receiving_food_stamps">Households recieving SNAP</option>
+
+                    <option value="pct_limited_english_households">Limited English Households</option>
+                    <option value="pct_speaks_other_than_english">Percent speaks other than English</option>
+                    <option value="pct_pop_below_poverty_level">Percent below Poverty Level</option>
                 </select>
               <br>  
               Show Competitors <input type="checkbox" id="competitors">
-
-
-
-    
-
             </p>
             <p>
               Data source: <a href="https://data.census.gov/">US Census Bureau </a>
@@ -68,6 +68,13 @@
     </body>
     </html>
     <script type="text/javascript">
+
+        const heightSelector = document.getElementById("height-selector");
+        const colorSelector = document.getElementById("color-selector");
+
+
+
+
         const COLOR_SCALE = d3.scaleThreshold().domain([0, 0.05, 0.10,0.15,0.2,0.3, 0.45, 0.6, 0.75,1.0]).range([
             [65, 182, 196],
             [127, 205, 187],
@@ -88,55 +95,77 @@
             return (
                 object && {
                 html: `\
-            <div><b>Average Property Value</b></div>
-            <div>County: ${object.properties.geo_name}</div>
-            <div>with id: ${object.properties.geo_id}</div>
-            <div>Households with Kids ${object.properties.pct_households_with_kids}%</div>
+            <div><b>${object.properties.geo_name}</b></div>
+            <div>${object.properties.geo_id}</div>
+            <div>Households: ${object.properties.total_households}</div>
+            <div>Median family Income: $${object.properties.median_income_households_with_children}</div>
+            
+            <div>Households with Kids:            ${object.properties.pct_households_with_children_married_family}%</div>
+            <div>Pop speaking other than English: ${object.properties.pct_speaks_other_than_english}%</div>
+            <div>Limited English Households:      ${object.properties.pct_limited_english_households}%</div>
+            <div>Pop below Poverty Level:         ${object.properties.pct_pop_below_poverty_level}%</div>
             `
                 }
             );
         }
         
+        function createDeck() {
+            return new deck.DeckGL({
+                mapStyle: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+                getTooltip: tooltip,
+                initialViewState: {
+                    latitude: 40.254,
+                    longitude: -100.13,
+                    maxZoom: 10,
+                    minZoom: 3,
+                    zoom: 3.5,
+                    bearing: 0,
+                    pitch: 30
+                },
+                controller: true,
+            });
+    }
 
-       
+    function updateCanvas() {
+        const selectedHeightProperty = heightSelector.value;
+        const selectedColorProperty = colorSelector.value;
+        console.log(selectedHeightProperty,selectedColorProperty);
+
+        deckgl.finalize(); // Clean up the previous instance
+        deckgl = createDeck(); // Create a new instance
 
 
-        const deckgl = new deck.DeckGL({
-        
-        mapStyle: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-        getTooltip: tooltip,
-        initialViewState: {
-            latitude: 40.254,
-            longitude: -100.13,
-            maxZoom: 10,
-            minZoom: 3,
-            zoom: 4,
-            bearing: 0,
-            pitch: 30
-        },
-        controller: true,
-        layers: [
-        new deck.GeoJsonLayer({
-            id: 'geojson',
-            data: './county-plots.json',
-            opacity: 0.8,
-            stroked: false,
-            filled: true,
-            extruded: true,
-            wireframe: true,
-            getElevation: f => Math.sqrt( f.properties.total_households ) * 500,
-            getFillColor: f => {
-                const color = COLOR_SCALE(f.properties.pct_speaks_other_than_english/100);
-                console.log(f.properties.pct_households_with_kids)
-                console.log('Color:', color);
+        deckgl.setProps({
+            layers: [
+            new deck.GeoJsonLayer({
+                id: "geojson",
+                data: "./county-plots.json",
+                opacity: 0.8,
+                stroked: false,
+                filled: true,
+                extruded: true,
+                wireframe: true,
+                getElevation: (f) => {
+                    if (selectedHeightProperty == "total_households")
+                         return Math.sqrt(f.properties[selectedHeightProperty]) * 500;
+                    else  // then income
+                        return f.properties[selectedHeightProperty] 
+                },
+                getFillColor: (f) => {
+                const color = COLOR_SCALE(f.properties[selectedColorProperty] / 100);
                 return color;
-            },
-            // getFillColor: f => COLOR_SCALE(f.properties.pct_households_with_kids),
-            getLineColor: [255, 255, 255],
-            pickable: true
-        })
-        ]
-    });
+                },
+                getLineColor: [255, 255, 255],
+                pickable: true,
+            }),
+            ],
+        });
+    }
+    let deckgl = createDeck();
+    updateCanvas();
+
+    heightSelector.addEventListener("change", updateCanvas);
+    colorSelector.addEventListener("change", updateCanvas);
     </script>
 
 </html>
