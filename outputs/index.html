@@ -15,7 +15,20 @@
                 padding: 0;
                 font-family: UberMove, Helvetica, Arial, sans-serif;
             }
-            
+            .layout {
+                display: table;
+                width: 100%;
+            }
+            .legend {
+                height: 12px;
+                display: table-cell !important;
+
+            }
+
+            .picker {
+                font-size: 12px;
+            }
+
             #container {
                 width: 100vw;
                 height: 100vh;
@@ -41,13 +54,14 @@
               <br>
               Height of polygons               
 
-                <select id="height-selector">
+                <select class="picker" id="height-selector">
                     <option value="total_households">Total Households</option>
-                    <option value="median_income_households_with_children">Median Income</option>
+                    <option value="median_income_households_with_children">Median Income (Households w Kids)</option>
+                    <option value="none">None</option>
                 </select>
               <br>
               Color 
-                <select id="color-selector">
+                <select class="picker" id="color-selector">
                     <option value="pct_households_with_chilren">Households with Kids</option>
                     <option value="pct_households_with_children_married_family">Married Family Households</option>
                     <option value="pct_households_receiving_food_stamps">Households recieving SNAP</option>
@@ -55,10 +69,14 @@
                     <option value="pct_limited_english_households">Limited English Households</option>
                     <option value="pct_speaks_other_than_english">Percent speaks other than English</option>
                     <option value="pct_pop_below_poverty_level">Percent below Poverty Level</option>
+                    <option value="prediction">Likely Customer Prediction</option>
                 </select>
               <br>  
               Show Competitors <input type="checkbox" id="competitors">
             </p>
+            
+            <div class="layout"><div class="legend" style="background:rgb(127,205,187);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(199,233,180);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(237,248,177);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(255,255,204);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(255,237,160);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(254,217,118);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(254,178,76);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(253,141,60);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(252,78,42);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(227,26,28);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(189,0,38);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(128,0,38);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(128,0,38);width:7.6923076923076925%"></div></div>
+            <div class="layout"><div class="legend" style="width:7.6923076923076925%">-60<!-- -->%</div><div class="legend" style="width:7.6923076923076925%">-30<!-- -->%</div><div class="legend" style="width:7.6923076923076925%">0<!-- -->%</div><div class="legend" style="width:7.6923076923076925%">30<!-- -->%</div><div class="legend" style="width:7.6923076923076925%">60<!-- -->%</div><div class="legend" style="width:7.6923076923076925%">90<!-- -->%</div><div class="legend" style="width:7.6923076923076925%">120<!-- -->%</div></div>
             <p>
               Data source: <a href="https://data.census.gov/">US Census Bureau </a>
             </p>
@@ -69,12 +87,14 @@
     </html>
     <script type="text/javascript">
 
+        // add legend interactivity
         const heightSelector = document.getElementById("height-selector");
         const colorSelector = document.getElementById("color-selector");
+        const competitorsCheckbox = document.getElementById("competitors");
 
 
 
-
+        // define a d3 scale 
         const COLOR_SCALE = d3.scaleThreshold().domain([0, 0.05, 0.10,0.15,0.2,0.3, 0.45, 0.6, 0.75,1.0]).range([
             [65, 182, 196],
             [127, 205, 187],
@@ -129,31 +149,42 @@
     function updateCanvas() {
         const selectedHeightProperty = heightSelector.value;
         const selectedColorProperty = colorSelector.value;
-        console.log(selectedHeightProperty,selectedColorProperty);
+        const showCompetitors = competitorsCheckbox.checked;     
 
-        deckgl.finalize(); // Clean up the previous instance
-        deckgl = createDeck(); // Create a new instance
 
+
+        deckgl.finalize();
+        deckgl = createDeck(); // Create a new deck
 
         deckgl.setProps({
             layers: [
             new deck.GeoJsonLayer({
                 id: "geojson",
-                data: "./county-plots.json",
+                data: "./county-plots-private.json",
                 opacity: 0.8,
                 stroked: false,
                 filled: true,
                 extruded: true,
                 wireframe: true,
                 getElevation: (f) => {
+                    if (showCompetitors == false & f.properties.uses_competitor != "" )                       
+                        return 0
                     if (selectedHeightProperty == "total_households")
                          return Math.sqrt(f.properties[selectedHeightProperty]) * 500;
-                    else  // then income
-                        return f.properties[selectedHeightProperty] 
+                    if (selectedHeightProperty == "median_income_households_with_children")
+                        return (f.properties[selectedHeightProperty] ** 2)/50000
+                    else 
+                        return 0
                 },
                 getFillColor: (f) => {
-                const color = COLOR_SCALE(f.properties[selectedColorProperty] / 100);
-                return color;
+                    if (showCompetitors == false & f.properties.uses_competitor != "" )                       
+                        return [0,0,0]
+                    
+                    if (selectedColorProperty == "prediction")
+                        return COLOR_SCALE(f.properties[selectedColorProperty] );
+                    
+                    const color = COLOR_SCALE(f.properties[selectedColorProperty] / 100);
+                    return color;
                 },
                 getLineColor: [255, 255, 255],
                 pickable: true,
@@ -164,6 +195,7 @@
     let deckgl = createDeck();
     updateCanvas();
 
+    competitorsCheckbox.addEventListener("change", updateCanvas);
     heightSelector.addEventListener("change", updateCanvas);
     colorSelector.addEventListener("change", updateCanvas);
     </script>
