@@ -22,13 +22,7 @@
             .legend {
                 height: 12px;
                 display: table-cell !important;
-
             }
-
-            .picker {
-                font-size: 12px;
-            }
-
             #container {
                 width: 100vw;
                 height: 100vh;
@@ -54,31 +48,33 @@
               <br>
               Height of polygons               
 
-                <select class="picker" id="height-selector">
+                <select  id="height-selector">
                     <option value="total_households">Total Households</option>
                     <option value="median_income_households_with_children">Median Income (Households w Kids)</option>
                     <option value="none">None</option>
                 </select>
               <br>
               Color 
-                <select class="picker" id="color-selector">
+                <select id="color-selector">
                     <option value="pct_households_with_chilren">Households with Kids</option>
                     <option value="pct_households_with_children_married_family">Married Family Households</option>
-                    <option value="pct_households_receiving_food_stamps">Households recieving SNAP</option>
+                    <option value="pct_households_receiving_food_stamps">Percent Households recieving Food Stamps</option>
 
-                    <option value="pct_limited_english_households">Limited English Households</option>
+                    <option value="pct_limited_english_households">Percent Limited English Households</option>
                     <option value="pct_speaks_other_than_english">Percent speaks other than English</option>
-                    <option value="pct_pop_below_poverty_level">Percent below Poverty Level</option>
+                    <option value="pct_pop_below_poverty_level">Percent Pop below Poverty Level</option>
                     <option value="prediction">Likely Customer Prediction</option>
                 </select>
               <br>  
               Show Competitors <input type="checkbox" id="competitors">
             </p>
             
-            <div class="layout"><div class="legend" style="background:rgb(127,205,187);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(199,233,180);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(237,248,177);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(255,255,204);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(255,237,160);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(254,217,118);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(254,178,76);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(253,141,60);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(252,78,42);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(227,26,28);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(189,0,38);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(128,0,38);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(128,0,38);width:7.6923076923076925%"></div></div>
-            <div class="layout"><div class="legend" style="width:7.6923076923076925%">-60<!-- -->%</div><div class="legend" style="width:7.6923076923076925%">-30<!-- -->%</div><div class="legend" style="width:7.6923076923076925%">0<!-- -->%</div><div class="legend" style="width:7.6923076923076925%">30<!-- -->%</div><div class="legend" style="width:7.6923076923076925%">60<!-- -->%</div><div class="legend" style="width:7.6923076923076925%">90<!-- -->%</div><div class="legend" style="width:7.6923076923076925%">120<!-- -->%</div></div>
+            <div class="layout"><div class="legend" style="background:rgb(202,235,21);width:8%"></div><div class="legend" style="background:rgb(184, 226, 179);width:7%"></div><div class="legend" style="background:rgb(189, 223, 147);width:5%"></div><div class="legend" style="background:rgb(216, 225, 126);width:5%"></div><div class="legend" style="background:rgb(246, 224, 114);width:10%"></div><div class="legend" style="background:rgb(246, 198, 89);width:15%"></div><div class="legend" style="background:rgb(254,178,76);width:7.6923076923076925%"></div><div class="legend" style="background:rgb(244, 169, 70);width:10%"></div><div class="legend" style="background:rgb(245, 138, 63);width:15%"></div><div class="legend" style="background:rgb(245, 108, 6);width:10%"></div></div>
+            <div class="layout"><div class="legend" style="width:20%">0%</div><div class="legend" style="width:20%">20%</div><div class="legend" style="width:20%">40%</div><div class="legend" style="width:20%">60%</div><div class="legend" style="width:20%">80%</div><div class="legend" style="width:20%">100%</div></div>
             <p>
-              Data source: <a href="https://data.census.gov/">US Census Bureau </a>
+                <b>Tip:</b> Hold down shift to pan the camera.
+                <br>
+                Data source: <a href="https://data.census.gov/">US Census Bureau </a>
             </p>
           </div>
 
@@ -95,20 +91,29 @@
 
 
         // define a d3 scale 
-        const COLOR_SCALE = d3.scaleThreshold().domain([0, 0.05, 0.10,0.15,0.2,0.3, 0.45, 0.6, 0.75,1.0]).range([
-            [65, 182, 196],
-            [127, 205, 187],
-            [199, 233, 180],
-            [237, 248, 177],
-            [255, 255, 204],
-            [255, 237, 160],
-            [254, 217, 118],
-            [254, 178, 76],
-            [253, 141, 60],
-            [252, 78, 42],
-            [227, 26, 28],
-            [189, 0, 38],
-            [128, 0, 38]
+        const COLOR_SCALE = d3.scaleThreshold().domain([0, 0.08, 0.15, 0.20, 0.25, 0.35, 0.5, 0.65, 0.75, 0.90, 1.0]).range([
+            [202, 235, 215],
+            [184, 226, 179],
+            [189, 223, 147],
+            [216, 225, 126],
+            [246, 224, 114],
+            [246, 198, 89],
+            [244, 169, 70],
+            [245, 138, 63],
+            [245, 108, 63]
+            // [65, 182, 196],
+            // [127, 205, 187],
+            // [199, 233, 180],
+            // [237, 248, 177],
+            // [255, 255, 204],
+            // [255, 237, 160],
+            // [254, 217, 118],
+            // [254, 178, 76],
+            // [253, 141, 60],
+            // [252, 78, 42], 
+            // [227, 26, 28], 
+            // [189, 0, 38],
+            // [128, 0, 38] 
         ]);
         
         function tooltip({object}) {
