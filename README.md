@@ -7,9 +7,9 @@ The project objective was to identify US counties and school districts with a hi
 
 To run or make changes to the code, first go to the [data](./data) folder and unzip all the `.zip` files. Then you can run the notebooks in the following order:
 
-- [prepare](notebooks/prepare.ipynb): retr . outputs `cty-sd-latest-indicators.csv`
-- [make_plotly_vis](notebooks/make_plotly_vis.ipynb): retrieve county data and make 
-- [extract_reachwell_client_list](notebooks/make_plotly_vis.ipynb): extract counnty and school district codes from the Reahwell client list (you will need the `.kml` file to run this). outputs `reachwell-clients.csv` 
+- [prepare](notebooks/prepare.ipynb): retrieve and rename data from saved census files. outputs `cty-sd-latest-indicators.csv`
+- [make_plotly_vis](notebooks/make_plotly_vis.ipynb): create simple plots with county and school distrct data. outputs `geojson-school-districts.json`
+- [extract_reachwell_client_list](notebooks/make_plotly_vis.ipynb): extract counnty and school district codes from the Reahwell client list (you will need the `.kml` annd `geojson-school-districts.json` file to run this). outputs `reachwell-clients.csv` 
 - [model](notebooks/model.ipynb): outputs `school-districts-counties-predictions.xlsx` and `county-plots.json`
 - [index](outputs/index.html): contains Javascript code that will render the entire page as an interactive map
 
