@@ -54,11 +54,11 @@ Code for extracting the data from census files (and updating lagged 5-year data 
 
 After extracting the data and the reachwell client list (see [here](notebooks/extract_client_list.ipynb)), I set up a classification problem to 
 predict whether a county or school district might have a high need for Reachwell. Specifiicaly, counties and school districts that used either Reachwell
-or a competitor were tagged with `label=1`, and all other counties and school districts were tagged with `label=0`.
+or a competitor were tagged with `label=1`, and all other counties and school districts were tagged with `label=0`. This created a highly imbalanced dataset (about 150:1). So for training, I balanced the dataset by only includinng 100 negative examples.
 
-For model features, I used a non-overlapping subset of the indicators extracted from the [prepare](notebooks/prepare.ipynb) notebook (for example I omitted `pct_speaks_only_english` becaus it's perfectly colinear with `pct_speaks_other_than_english`). Of these features, `log_total_households`  and `pct_speaks_other_than_english` were particularly important. This means that my model relied heavilly on these two indicators to predict likely Reachwell customers. To my surprise, `pct_limited_english_households` was not an important indicator.
+For model features, I used a non-overlapping subset of the indicators extracted from the [prepare](notebooks/prepare.ipynb) notebook (for example I omitted `pct_speaks_only_english` becaus it's perfectly colinear with `pct_speaks_other_than_english`). Of these features, `log_total_households` and `pct_speaks_other_than_english` were particularly important. This means that my model relied heavilly on these two indicators to predict likely Reachwell customers. Surprisingly, `pct_limited_english_households` was not an important indicator.
 
-I also held on to 20% of the positive examples to evaluate the model's performance on some unseen data. Below is a table the performance metrics. The first four are classification 
+I also held on to 20% of the data to evaluate the model's performance. Below is a table the performance metrics. The first four are classification 
 metrics that evaluate performance directly. The last two (`Average Precision` and `Precision@K`) are ranking/recommendation metrics, which evaluate the quality of the resulting ordered list.
 
 
