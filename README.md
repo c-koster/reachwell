@@ -3,7 +3,7 @@ Hello!
 
 This repository contains code, visualizations, and modeling results for a project completed for [Reachwell](https://www.reachwellapp.com/), a non-profit company which connects families to schools and public entities through a multilingual chat and annoucements application.
 
-The project objective was to identify US counties and school districts with a high need for Reachwell based on poverty, population, and multi-lingual indicators, and visualize these communities on a map. Reachwell client data (both raw data and the predicted likely buyers file) has been omitted from this repo, but a modified visualization (with client data omitted) can be viewed [here](https://cultonkoster.com/reachwell-vis) and in the screenshot below:
+The project objective was to identify US counties and school districts with a high need for Reachwell based on poverty, population, and multi-lingual indicators, and visualize these communities on a map. Reachwell client data (both raw data and the predicted likely buyers file) has been omitted from this repo, but a modified visualization (with client data omitted) can be viewed [here](https://cultonkoster.com/reachwell-site) and in the screenshot below:
 
 ![example choropleth](example_pic.png)
 
