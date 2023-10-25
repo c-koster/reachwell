@@ -3,7 +3,9 @@ Hello!
 
 This repository contains code, visualizations, and modeling results for a project completed for [Reachwell](https://www.reachwellapp.com/), a non-profit company which connects families to schools and public entities through a multilingual chat and annoucements application.
 
-The project objective was to identify US counties and school districts with a high need for Reachwell based on poverty, population, and multi-lingual indicators, and visualize these communities on a map. Reachwell client data (both raw data and the predicted likely buyers file) has been omitted from this repo, but a modified visualization (with client data omitted) can be viewed [here](https://cultonkoster.com/reachwell-vis).
+The project objective was to identify US counties and school districts with a high need for Reachwell based on poverty, population, and multi-lingual indicators, and visualize these communities on a map. Reachwell client data (both raw data and the predicted likely buyers file) has been omitted from this repo, but a modified visualization (with client data omitted) can be viewed [here](https://cultonkoster.com/reachwell-vis) and in the screenshot below:
+
+![example choropleth](example_pic.png)
 
 To run or make changes to the code, first go to the [data](./data) folder and unzip all the `.zip` files. Then you can run the notebooks in the following order:
 
@@ -58,8 +60,7 @@ or a competitor were tagged with `label=1`, and all other counties and school di
 
 For model features, I used a non-overlapping subset of the indicators extracted from the [prepare](notebooks/prepare.ipynb) notebook (for example I omitted `pct_speaks_only_english` becaus it's perfectly colinear with `pct_speaks_other_than_english`). Of these features, `log_total_households`  and `pct_speaks_other_than_english` were particularly important. This means that my model relied heavilly on these two indicators to predict likely Reachwell customers. To my surprise, `pct_limited_english_households` was not an important indicator.
 
-I also held on to 20% of the positive examples to evaluate the model's performance on some unseen data. Below is a table the performance metrics. The first four are classification 
-metrics that evaluate performance directly. The last two (`Average Precision` and `Precision@K`) are ranking/recommendation metrics, which evaluate the quality of the resulting ordered list.
+I also held on to 20% of the positive examples to evaluate the model's performance on some unseen data. Below is a table the performance metrics. The first four are classification metrics that evaluate performance directly. The last two (`Average Precision` and `Precision@K`) are ranking/recommendation metrics, which evaluate the quality of the resulting ordered list.
 
 
 | Model Name                       | Balanced Acc | Precision | Recall | F1 Score | Average Precision | Precision@500 |
